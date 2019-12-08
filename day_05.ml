@@ -77,16 +77,6 @@ let naloga1 xs =
   in aux xs 0 xs
 
 
-let naloga2 vsebina_datoteke =
-  let list = List.init 100 (fun x -> x) in
-  let rec aux ys = function
-    | [] -> aux (List.tl ys) list
-    | x :: xs ->
-      if naloga1 ((List.hd vsebina_datoteke) :: (List.hd ys) :: x :: (List.tl (List.tl (List.tl vsebina_datoteke)))) <> 19690720
-      then aux ys xs
-      else 100*(List.hd ys) + x
-  in aux list list
-
 let _ =
   let preberi_datoteko ime_datoteke =
     let chan = open_in ime_datoteke in
