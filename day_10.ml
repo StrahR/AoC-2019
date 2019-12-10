@@ -46,6 +46,34 @@ let naloga1 map width height =
     if w = 0 && h = height then acc
     else if w = width then aux (acc) 0 (h+1)
     else aux (max acc (visible_from w h map width height)) (w+1) h
+    (* else let v = visible_from w h map width height in 
+       if acc < v then (print_endline (string_of_int w ^ " " ^ string_of_int h); aux (v) (w+1) h)
+       else aux acc (w+1) h *)
+  in aux 0 0 0
+
+let cmp (m, n) (k, l) =
+  (atan2 (float_of_int (-m)) (float_of_int (n))) <
+  (atan2 (float_of_int (-k)) (float_of_int (l)))
+
+let before m n k l map width height = 
+  let rec aux acc w h =
+    if w = 0 && h = height then acc
+    else if w = width then aux (acc) 0 (h+1)
+    else if cmp (k - m, l - n) (w - m, h - n) then aux acc (w+1) h
+    else if is_visible_from m n w h map then aux (acc+1) (w+1) h
+    else aux acc (w+1) h
+  in aux 0 0 0
+
+let naloga2 m n map width height =
+  (* visible_from m n map width height *)
+  (* before m n 19 19 map width height *)
+  let rec aux acc w h =
+    if w = 0 && h = height then acc
+    else if w = width then aux (acc) 0 (h+1)
+    else if Hashtbl.find map (w, h) = "." then aux (acc) (w+1) h
+    else if before m n w h map width height = 199 (* off by 1 *) then 
+      (print_endline (string_of_int w ^ " " ^ string_of_int h); aux (100*w + h) (w+1) h)
+    else aux acc (w+1) h
   in aux 0 0 0
 
 let _ =
@@ -63,8 +91,9 @@ let _ =
   List.iteri (fun n s -> List.iteri (fun m c -> Hashtbl.add vsebina_datoteke (m, n) (Char.escaped c)) (List.of_seq (String.to_seq s)))
     (String.split_on_char '\n' (preberi_datoteko "day_10.in"));
   let odgovor1 = naloga1 vsebina_datoteke 26 26
-  (* and odgovor2 = naloga2 vsebina_datoteke *)
+  and odgovor2 = naloga2 19 14 vsebina_datoteke 26 26
   in
-  (* print_endline (string_of_bool (is_visible_from 4 0 4 3 vsebina_datoteke)); *)
+  print_endline (Hashtbl.find vsebina_datoteke (3, 5));
+  print_endline (string_of_int (before 19 14 3 5 vsebina_datoteke 26 26));
   izpisi_datoteko "day_10_1.out" (string_of_int odgovor1);
-  (* izpisi_datoteko "day_10_2.out" odgovor2; *)
+  izpisi_datoteko "day_10_2.out" (string_of_int odgovor2)
